@@ -26,7 +26,7 @@ func main() {
 	// 創建一個 gin 引擎實例
 	server := gin.Default()
 	// 設置模板文件路徑
-	server.LoadHTMLGlob("template/*")
+	server.LoadHTMLGlob("static/html/*")
 	// 註冊一個處理 GET 請求的路由規則，當路由為 "/" 時，調用 test 函數處理請求
 	server.GET("/", test)
 	// 啟動服務，監聽 8888 端口
