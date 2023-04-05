@@ -5,40 +5,19 @@ import (
 	"net/http" // 引入 net/http 包，用於處理 HTTP 請求
 
 	"github.com/gin-gonic/gin" // 引入 gin 框架
+	"gorm.io/gorm"
 )
 
-// UserData 變量，用於存儲用戶名和密碼
-var UserData map[string]string
-
-func init() {
-	// 初始化 UserData 變量，添加一個用戶
-	UserData = map[string]string{
-		"test": "test",
-	}
-}
-
-// CheckUserIsExist 函數，用於檢查用戶是否存在
-func CheckUserIsExist(username string) bool {
-	_, isExist := UserData[username] // 判斷用戶名是否存在
-	return isExist
-}
-
-// CheckPassword 函數，用於檢查密碼是否正確
-func CheckPassword(p1 string, p2 string) error {
-	if p1 == p2 {
-		return nil // 密碼正確，返回 nil
-	} else {
-		return errors.New("password is not correct") // 密碼不正確，返回錯誤
-	}
-}
-
 // Auth 函數，用於驗證用戶名和密碼是否正確
-func Auth(username string, password string) error {
-	if isExist := CheckUserIsExist(username); isExist {
-		return CheckPassword(UserData[username], password) // 驗證密碼是否正確
-	} else {
-		return errors.New("user is not exist") // 用戶不存在，返回錯誤
+func Auth(db *gorm.DB, username string, password string) error {
+	user, err := FindUser(db, username)
+	if err != nil {
+		return err
 	}
+	if user.Password != password {
+		return errors.New("password is not correct")
+	}
+	return nil
 }
 
 // LoginPage 函數，用於顯示登入頁面
@@ -47,7 +26,7 @@ func LoginPage(c *gin.Context) {
 }
 
 // LoginAuth 函數，用於處理登入請求
-func LoginAuth(c *gin.Context) {
+func LoginAuth(db *gorm.DB, c *gin.Context) {
 	var (
 		username string
 		password string
@@ -68,7 +47,7 @@ func LoginAuth(c *gin.Context) {
 		})
 		return
 	}
-	if err := Auth(username, password); err == nil {
+	if err := Auth(db, username, password); err == nil {
 		c.HTML(http.StatusOK, "login.html", gin.H{
 			"success": "登入成功",
 		})

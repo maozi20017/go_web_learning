@@ -9,20 +9,22 @@ import (
 	"gorm.io/gorm"         // 引入 gorm 套件
 )
 
-type Config struct {
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
-	Network  string `yaml:"network"`
-	Server   string `yaml:"server"`
-	Port     int    `yaml:"port"`
-	Database string `yaml:"database"`
-}
+type (
+	Config struct {
+		Username string `yaml:"username"`
+		Password string `yaml:"password"`
+		Network  string `yaml:"network"`
+		Server   string `yaml:"server"`
+		Port     int    `yaml:"port"`
+		Database string `yaml:"database"`
+	}
 
-type User struct {
-	ID       int64  `json:"id" gorm:"primary_key;auto_increase'"`
-	Username string `json:"username"` // 使用者名稱
-	Password string `json:""`         // 密碼
-}
+	User struct {
+		ID       int64  `json:"id" gorm:"primary_key;auto_increase'"`
+		Username string `json:"username"` // 使用者名稱
+		Password string `json:""`         // 密碼
+	}
+)
 
 func main() {
 	// 設定 Viper 套件
@@ -59,7 +61,7 @@ func main() {
 		panic("資料庫 Migrate 失敗，原因為 " + err.Error())
 	}
 
-	if user, err := FindUser(db, 1); err == nil { // 查詢符合條件的 user 資料
+	if user, err := FindUser(db, user.Username); err == nil { // 查詢符合條件的 user 資料
 		log.Println("查詢到 User 為 ", user)
 	} else {
 		panic("查詢 user 失敗，原因為 " + err.Error())
