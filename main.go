@@ -2,16 +2,17 @@ package main
 
 import (
 	"fmt"
-	"log"
+	"net/http"
 
-	"github.com/spf13/viper"
-	"gorm.io/driver/mysql" // 引入 gorm 支援的 mysql driver
-	"gorm.io/gorm"         // 引入 gorm 套件
+	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper" // 引入 viper 套件
+	"gorm.io/driver/mysql"   // 引入 gorm 支援的 mysql driver
+	"gorm.io/gorm"           // 引入 gorm 套件
 )
 
 type (
-	Config struct {
-		Username string `yaml:"username"`
+	Config struct { // 定義 Config 結構
+		Username string `yaml:"username"` // 使用 yaml 格式的註解，定義屬性名稱
 		Password string `yaml:"password"`
 		Network  string `yaml:"network"`
 		Server   string `yaml:"server"`
@@ -19,18 +20,35 @@ type (
 		Database string `yaml:"database"`
 	}
 
-	User struct {
+	User struct { // 定義 User 結構
 		ID       int64  `json:"id" gorm:"primary_key;auto_increase'"`
-		Username string `json:"username"` // 使用者名稱
-		Password string `json:""`         // 密碼
+		Username string `json:"username"` // 使用 json 格式的註解，定義屬性名稱
+		Password string `json:"password"` // 使用 json 格式的註解，定義屬性名稱
+	}
+
+	// IndexData 結構體，用於存儲首頁數據
+	IndexData struct {
+		Title   string // 標題
+		Content string // 內容
 	}
 )
 
+// test 函數，用於處理首頁請求
+func test(c *gin.Context) {
+	// 創建一個 IndexData 對象
+	data := new(IndexData)
+	data.Title = "首頁"        // 設置標題
+	data.Content = "我的第一個首頁" // 設置內容
+	// 返回 HTML 響應
+	c.HTML(http.StatusOK, "index.html", data)
+}
+
 func main() {
+
 	// 設定 Viper 套件
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath("./config")
+	viper.SetConfigName("config")   // 設定配置檔案名稱
+	viper.SetConfigType("yaml")     // 設定配置檔案格式
+	viper.AddConfigPath("./config") // 設定配置檔案路徑
 
 	// 讀取 YAML 檔案
 	if err := viper.ReadInConfig(); err != nil {
@@ -53,17 +71,34 @@ func main() {
 		panic("資料庫 Migrate 失敗，原因為 " + err.Error())
 	}
 
-	user := &User{
-		Username: "test", // 使用者名稱
-		Password: "test", // 密碼
-	}
-	if err := CreateUser(db, user); err != nil { // 在資料庫中新增一筆 user 資料
-		panic("資料庫 Migrate 失敗，原因為 " + err.Error())
-	}
+	// 創建一個 gin 引擎實例
+	server := gin.Default()
+	// 設置模板文件路徑
+	server.LoadHTMLGlob("static/html/*")
+	// 註冊一個處理 GET 請求的路由規則，當路由為 "/" 時，調用 test 函數處理請求
+	server.GET("/", test)
+	// 啟動服務，監聽 8888 端口
+	//設定靜態資源的讀取
+	server.Static("/static", "./static")
+	server.GET("/login", LoginPage)
+	server.POST("/login", LoginAuth(db))
+	server.GET("/register", RegisterPage)
+	server.POST("/register", RegisterAuth(db))
+	server.Run(":8888")
 
-	if user, err := FindUser(db, user.Username); err == nil { // 查詢符合條件的 user 資料
-		log.Println("查詢到 User 為 ", user)
-	} else {
-		panic("查詢 user 失敗，原因為 " + err.Error())
-	}
+	// user := &User{
+	// 	Username: "test", // 使用者名稱
+	// 	Password: "test", // 密碼
+	// }
+	// // 在資料庫中新增一筆 user 資料，如果發生錯誤就 panic
+	// if err := CreateUser(db, user); err != nil {
+	// 	panic("資料庫 Migrate 失敗，原因為 " + err.Error())
+	// }
+
+	// // 查詢符合條件的 user 資料，如果發生錯誤就 panic
+	// if user, err := FindUser(db, user.Username); err == nil {
+	// 	log.Println("查詢到 User 為 ", user)
+	// } else {
+	// 	panic("查詢 user 失敗，原因為 " + err.Error())
+	// }
 }
