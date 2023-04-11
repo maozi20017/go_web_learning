@@ -53,15 +53,19 @@ func main() {
 		panic("資料庫 Migrate 失敗，原因為 " + err.Error())
 	}
 
-	// 建立一筆 Role_id 為 0 的 Role 紀錄，即一般使用者
-	db.Create(&Role{Role_id: 1, Description: "一般使用者"})
-	// 建立一筆 Role_id 為 1 的 Role 紀錄，即版主
-	db.Create(&Role{Role_id: 2, Description: "版主"})
-	// 建立一筆 Role_id 為 2 的 Role 紀錄，即管理員
-	db.Create(&Role{Role_id: 3, Description: "管理員"})
+	// 建立一筆 Role_id 為 0 的 Role 紀錄，即一般使用者 存在就不修改
+	db.FirstOrCreate(&Role{Role_id: 1, Description: "一般使用者"})
+	// 建立一筆 Role_id 為 1 的 Role 紀錄，即版主 存在就不修改
+	db.FirstOrCreate(&Role{Role_id: 2, Description: "版主"})
+	// 建立一筆 Role_id 為 2 的 Role 紀錄，即管理員 存在就不修改
+	db.FirstOrCreate(&Role{Role_id: 3, Description: "管理員"})
 
-	// 建立一個 Role_id 為 3 的版主使用者
-	db.Create(&User{Username: "10811225", Password: "ghost8797", Role_ID: 3})
+	// 建立一個 Role_id 為 3 的管理員 存在就不修改
+	db.FirstOrCreate(&User{Username: "10811225", Password: "ghost8797", Role_ID: 3})
+
+	var user User
+	db.Preload("Role").First(&user, 3)
+	fmt.Printf("%+v", user)
 
 	// 創建一個 gin 引擎實例
 	server := gin.Default()
