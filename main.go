@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper" // 引入 viper 套件
@@ -19,29 +18,7 @@ type (
 		Port     int    `yaml:"port"`
 		Database string `yaml:"database"`
 	}
-
-	User struct { // 定義 User 結構
-		ID       int64  `json:"id" gorm:"primary_key;auto_increase'"`
-		Username string `json:"username"` // 使用 json 格式的註解，定義屬性名稱
-		Password string `json:"password"` // 使用 json 格式的註解，定義屬性名稱
-	}
-
-	// IndexData 結構體，用於存儲首頁數據
-	IndexData struct {
-		Title   string // 標題
-		Content string // 內容
-	}
 )
-
-// test 函數，用於處理首頁請求
-func test(c *gin.Context) {
-	// 創建一個 IndexData 對象
-	data := new(IndexData)
-	data.Title = "首頁"        // 設置標題
-	data.Content = "我的第一個首頁" // 設置內容
-	// 返回 HTML 響應
-	c.HTML(http.StatusOK, "index.html", data)
-}
 
 func main() {
 
@@ -67,16 +44,29 @@ func main() {
 	if err != nil {
 		panic("使用 gorm 連線 DB 發生錯誤，原因為 " + err.Error())
 	}
+
 	if err := db.AutoMigrate(new(User)); err != nil { // 自動建立 User 資料表
 		panic("資料庫 Migrate 失敗，原因為 " + err.Error())
 	}
+
+	if err := db.AutoMigrate(new(Role)); err != nil { // 自動建立 Role 資料表
+		panic("資料庫 Migrate 失敗，原因為 " + err.Error())
+	}
+
+	// 建立一筆 Role_id 為 0 的 Role 紀錄，即一般使用者
+	db.Create(&Role{Role_id: 1, Description: "一般使用者"})
+	// 建立一筆 Role_id 為 1 的 Role 紀錄，即版主
+	db.Create(&Role{Role_id: 2, Description: "版主"})
+	// 建立一筆 Role_id 為 2 的 Role 紀錄，即管理員
+	db.Create(&Role{Role_id: 3, Description: "管理員"})
+
+	// 建立一個 Role_id 為 3 的版主使用者
+	db.Create(&User{Username: "10811225", Password: "ghost8797", Role_ID: 3})
 
 	// 創建一個 gin 引擎實例
 	server := gin.Default()
 	// 設置模板文件路徑
 	server.LoadHTMLGlob("static/html/*")
-	// 註冊一個處理 GET 請求的路由規則，當路由為 "/" 時，調用 test 函數處理請求
-	server.GET("/", test)
 	// 啟動服務，監聽 8888 端口
 	//設定靜態資源的讀取
 	server.Static("/static", "./static")
@@ -84,21 +74,6 @@ func main() {
 	server.POST("/login", LoginAuth(db))
 	server.GET("/register", RegisterPage)
 	server.POST("/register", RegisterAuth(db))
+	server.GET("/index", IndexPage)
 	server.Run(":8888")
-
-	// user := &User{
-	// 	Username: "test", // 使用者名稱
-	// 	Password: "test", // 密碼
-	// }
-	// // 在資料庫中新增一筆 user 資料，如果發生錯誤就 panic
-	// if err := CreateUser(db, user); err != nil {
-	// 	panic("資料庫 Migrate 失敗，原因為 " + err.Error())
-	// }
-
-	// // 查詢符合條件的 user 資料，如果發生錯誤就 panic
-	// if user, err := FindUser(db, user.Username); err == nil {
-	// 	log.Println("查詢到 User 為 ", user)
-	// } else {
-	// 	panic("查詢 user 失敗，原因為 " + err.Error())
-	// }
 }

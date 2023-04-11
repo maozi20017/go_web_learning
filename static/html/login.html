@@ -7,6 +7,9 @@
     <div class="alert alert-success" role="alert">
         {{ .success }}
     </div>
+    <script>
+        setTimeout(function(){window.location.href='{{.redirect}}';}, 2000);
+    </script>
 {{ end }}
 {{if .error}}
     <div class="alert alert-danger" role="alert">
@@ -19,7 +22,6 @@
             <div class="note">
                 <p>登入範例</p>
             </div>
-
             <div class="form-content">
                 <div class="row">
                     <div class="col-md-12">
@@ -32,6 +34,7 @@
                     </div>
                 </div>
                 <button type="submit" class="btnSubmit">登入</button>
+                <button type="button" class="btnSubmit" onclick="window.location.href='/register'">註冊頁面</button>
             </div>
         </div>
     </form>
