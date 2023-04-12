@@ -1,7 +1,8 @@
 package main // 包名為 main，表明這是一個可執行的 Go 程序
 
 import (
-	"errors"   // 引入 errors 包，用於返回錯誤
+	"errors" // 引入 errors 包，用於返回錯誤
+	"go_web_learning/model"
 	"net/http" // 引入 net/http 包，用於處理 HTTP 請求
 
 	"github.com/gin-gonic/gin" // 引入 gin 框架
@@ -31,7 +32,7 @@ func Register(db *gorm.DB, username string, password string) error {
 	if err == nil {
 		return errors.New("使用者已存在")
 	} else {
-		return CreateUser(db, &User{
+		return CreateUser(db, &model.User{
 			Username: username,
 			Password: password,
 		})

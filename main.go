@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"go_web_learning/model"
 	"log"
 )
 
@@ -17,7 +18,7 @@ func main() {
 	}()
 
 	// 查詢使用者資料，預先載入身分資訊
-	var users []User
+	var users []model.User
 	if err := db.Preload("Identity").Where("identity_id = ?", 3).Find(&users).Error; err != nil {
 		panic(err)
 	}
