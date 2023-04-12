@@ -33,14 +33,17 @@ func ConnectDB() (*gorm.DB, error) {
 		panic("資料庫 Migrate 失敗，原因為 " + err.Error())
 	}
 
-	if err := db.AutoMigrate(new(Role)); err != nil { // 自動建立 Role 資料表
+	db.FirstOrCreate(&User{ID: 1, Username: "10811212", Password: "10811212", IdentityID: 1})
+	db.FirstOrCreate(&User{ID: 2, Username: "10811220", Password: "10811220", IdentityID: 2})
+	db.FirstOrCreate(&User{ID: 3, Username: "10811225", Password: "ghost8797", IdentityID: 3})
+
+	if err := db.AutoMigrate(new(Identity)); err != nil { // 自動建立 Role 資料表
 		panic("資料庫 Migrate 失敗，原因為 " + err.Error())
 	}
 
-	db.FirstOrCreate(&Role{Role_id: 1, Description: "一般使用者"})
-	db.FirstOrCreate(&Role{Role_id: 2, Description: "版主"})
-	db.FirstOrCreate(&Role{Role_id: 3, Description: "管理員"})
-	db.FirstOrCreate(&User{Username: "10811225", Password: "ghost8797", Role_ID: 3})
+	db.FirstOrCreate(&Identity{ID: 1, Description: "一般使用者"})
+	db.FirstOrCreate(&Identity{ID: 2, Description: "版主"})
+	db.FirstOrCreate(&Identity{ID: 3, Description: "管理員"})
 
 	return db, nil
 }
