@@ -4,7 +4,7 @@ type User struct {
 	ID         int64    `json:"id" gorm:"primary_key;auto_increment"`
 	Username   string   `json:"username"`
 	Password   string   `json:"password"`
-	IdentityID int      `json:"identity_id"`
+	IdentityID int      `json:"identity_id" default:"1"`
 	Identity   Identity `json:"identity" gorm:"foreignKey:IdentityID"`
 }
 

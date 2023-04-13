@@ -39,6 +39,7 @@
                         <h5 class="card-title">歡迎來到毛子的網站</h5>
                         {{ if .username }}
                         <p>你好 {{ .username }}！</p>
+                        <p>身分為 {{ .identity }}！</p>
                         {{ end }}
                         <p class="card-text">這是一個使用 Golang 和 Gin 框架建立的網站。</p>
                         <button type="button" class="btn btn-primary"

@@ -24,8 +24,10 @@ func RegisterPage(c *gin.Context) {
 func IndexPage(c *gin.Context) {
 	session := sessions.Default(c)
 	username := session.Get("username")
+	identity := session.Get("identity")
 	c.HTML(http.StatusOK, "index.html", gin.H{
 		"username": username,
+		"identity": identity,
 	})
 }
 

@@ -1,7 +1,8 @@
 package main // 包名為 main，表明這是一個可執行的 Go 程序
 
 import (
-	"errors"   // 引入 errors 包，用於返回錯誤
+	"errors" // 引入 errors 包，用於返回錯誤
+	"go_web_learning/model"
 	"net/http" // 引入 net/http 包，用於處理 HTTP 請求
 
 	"github.com/gin-contrib/sessions"
@@ -71,6 +72,9 @@ func LoginAuth(db *gorm.DB) gin.HandlerFunc {
 			// 設定 session 變數
 			session := sessions.Default(c)
 			session.Set("username", username)
+			user := &model.User{}
+			db.Where("username = ?", username).Preload("Identity").First(user)
+			session.Set("identity", user.Identity.Description)
 			session.Save()
 
 			c.HTML(http.StatusOK, "login.html", gin.H{
