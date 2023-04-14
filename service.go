@@ -74,7 +74,7 @@ func LoginAuth(db *gorm.DB) gin.HandlerFunc {
 			session.Set("username", username)
 			user := &model.User{}
 			db.Where("username = ?", username).Preload("Identity").First(user)
-			session.Set("identity", user.Identity.Description)
+			session.Set("identity_description", user.Identity.Description)
 			session.Save()
 
 			c.HTML(http.StatusOK, "login.html", gin.H{

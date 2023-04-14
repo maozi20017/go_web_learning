@@ -24,22 +24,17 @@ func RegisterPage(c *gin.Context) {
 func IndexPage(c *gin.Context) {
 	session := sessions.Default(c)
 	username := session.Get("username")
-	identity := session.Get("identity")
+	identity := session.Get("identity_description")
 	c.HTML(http.StatusOK, "index.html", gin.H{
-		"username": username,
-		"identity": identity,
+		"username":             username,
+		"identity_description": identity,
 	})
 }
 
-// // AdminPage 函數，用於顯示後台管理頁面
-// func AdminPage(c *gin.Context) {
-// 	user := c.MustGet("user").(*model.User)
-// 	if user.IdentityID != 3 {
-// 		c.HTML(http.StatusUnauthorized, "unauthorized.html", nil)
-// 		return
-// 	}
-// 	c.HTML(http.StatusOK, "admin.html", nil)
-// }
+// AdminPage 函數，用於顯示後台管理頁面
+func AdminPage(c *gin.Context) {
+	c.HTML(http.StatusOK, "admin.html", nil)
+}
 
 // Login 函數，用於驗證用戶名和密碼是否正確
 func Login(db *gorm.DB, username string, password string) error {
@@ -61,8 +56,9 @@ func Register(db *gorm.DB, username string, password string) error {
 		return errors.New("使用者已存在")
 	} else {
 		return CreateUser(db, &model.User{
-			Username: username,
-			Password: password,
+			Username:   username,
+			Password:   password,
+			IdentityID: 1,
 		})
 	}
 }

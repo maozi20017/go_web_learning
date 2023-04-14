@@ -6,7 +6,7 @@
     <title>首頁</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
         id="bootstrap-css">
-    <link href="/static/css/custom.css" rel="stylesheet">
+    <link href="/static/css/login/custom.css" rel="stylesheet">
 </head>
 
 <body>
@@ -28,9 +28,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#">頁面3</a>
                     </li>
+                    {{ if eq .identity_description "管理員" }}
                     <li class="nav-item">
                         <a class="nav-link" href="/admin">後台管理</a>
                     </li>
+                    {{ end }}
                 </ul>
             </div>
             <div class="col-md-10">
@@ -39,7 +41,7 @@
                         <h5 class="card-title">歡迎來到毛子的網站</h5>
                         {{ if .username }}
                         <p>你好 {{ .username }}！</p>
-                        <p>身分為 {{ .identity }}！</p>
+                        <p>身分為 {{ .identity_description }}！</p>
                         {{ end }}
                         <p class="card-text">這是一個使用 Golang 和 Gin 框架建立的網站。</p>
                         <button type="button" class="btn btn-primary"
