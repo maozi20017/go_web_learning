@@ -27,6 +27,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	server.POST("/register", RegisterAuth(db))
 	server.GET("/index", IndexPage)
 	server.GET("/admin", AdminPage)
+	server.GET("/admin/user/list", UserListPage(db))
 
 	// 回傳路由器
 	return server

@@ -16,3 +16,9 @@ func FindUser(db *gorm.DB, username string) (*model.User, error) {
 	err := db.Where("username = ?", username).First(user).Error
 	return user, err // 回傳查詢到的 user 資料及錯誤訊息
 }
+
+func GetUserList(db *gorm.DB) ([]*model.User, error) {
+	users := []*model.User{}
+	err := db.Preload("Identity").Find(&users).Error
+	return users, err
+}

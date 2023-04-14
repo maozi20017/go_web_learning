@@ -1,8 +1,6 @@
 package main
 
 import (
-	"errors"
-	"go_web_learning/model"
 	"net/http"
 
 	"github.com/gin-contrib/sessions"
@@ -36,29 +34,11 @@ func AdminPage(c *gin.Context) {
 	c.HTML(http.StatusOK, "admin.html", nil)
 }
 
-// Login 函數，用於驗證用戶名和密碼是否正確
-func Login(db *gorm.DB, username string, password string) error {
-	user, err := FindUser(db, username)
-	if err != nil {
-		return errors.New("使用者不存在")
-	}
-	if user.Password != password {
-		return errors.New("密碼錯誤")
-	}
-
-	return nil
-}
-
-// Register 函數，用於註冊新用戶，驗證用戶名和密碼是否正確
-func Register(db *gorm.DB, username string, password string) error {
-	_, err := FindUser(db, username)
-	if err == nil {
-		return errors.New("使用者已存在")
-	} else {
-		return CreateUser(db, &model.User{
-			Username:   username,
-			Password:   password,
-			IdentityID: 1,
+func UserListPage(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		users, _ := GetUserList(db)
+		c.HTML(http.StatusOK, "userlist.html", gin.H{
+			"users": users,
 		})
 	}
 }
