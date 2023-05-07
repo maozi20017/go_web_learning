@@ -22,3 +22,7 @@ func GetUserList(db *gorm.DB) ([]*model.User, error) {
 	err := db.Preload("Identity").Find(&users).Error
 	return users, err
 }
+
+func DeleteUser(db *gorm.DB, user *model.User) error {
+	return db.Delete(user).Error // 在資料庫中刪除指定的 user 資料
+}

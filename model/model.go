@@ -9,7 +9,7 @@ type User struct {
 }
 
 type Identity struct {
-	ID          int64  `json:"id" gorm:"primary_key"`
+	ID          int    `json:"id" gorm:"primary_key"`
 	Description string `json:"description"`
 	Users       []User `json:"users" gorm:"foreignKey:IdentityID"`
 }

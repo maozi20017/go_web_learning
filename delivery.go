@@ -36,7 +36,10 @@ func AdminPage(c *gin.Context) {
 
 func UserListPage(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		users, _ := GetUserList(db)
+		users, err := GetUserList(db)
+		if err != nil {
+			panic(err)
+		}
 		c.HTML(http.StatusOK, "userlist.html", gin.H{
 			"users": users,
 		})
