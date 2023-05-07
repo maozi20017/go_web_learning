@@ -7,7 +7,7 @@ import (
 )
 
 func CreateUser(db *gorm.DB, user *model.User) error {
-	return db.Create(user).Error // 在資料庫中新增一筆 user 資料
+	return db.Create(user).Error // 在資料庫中新增一筆 User 資料
 }
 
 func FindUser(db *gorm.DB, username string) (*model.User, error) {
