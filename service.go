@@ -37,20 +37,20 @@ func Register(db *gorm.DB, username string, password string) error {
 }
 
 // ValidateForm 函數，用於驗證表單參數是否正確
-func ValidateForm(c *gin.Context, usernameField string, passwordField string) (string, string, error) {
+func ValidateForm(c *gin.Context) (string, string, error) {
 	var (
 		username string
 		password string
 	)
 	// 解析表單參數，檢查是否有 username 參數，並且值不為空
-	if in, isExist := c.GetPostForm(usernameField); isExist && in != "" {
+	if in, isExist := c.GetPostForm("username"); isExist && in != "" {
 		username = in
 	} else {
 		// 如果沒有 username 參數或值為空，返回一個帶有錯誤信息的 HTML 頁面
 		return "", "", errors.New("必須輸入使用者名稱")
 	}
 	// 解析表單參數，檢查是否有 password 參數，並且值不為空
-	if in, isExist := c.GetPostForm(passwordField); isExist && in != "" {
+	if in, isExist := c.GetPostForm("password"); isExist && in != "" {
 		password = in
 	} else {
 		// 如果沒有 password 參數或值為空，返回一個帶有錯誤信息的 HTML 頁面
@@ -62,7 +62,7 @@ func ValidateForm(c *gin.Context, usernameField string, passwordField string) (s
 // RegisterAuth 函數，用於處理註冊請求，驗證用戶名和密碼是否正確
 func RegisterAuth(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		username, password, err := ValidateForm(c, "username", "password")
+		username, password, err := ValidateForm(c)
 		if err != nil {
 			c.HTML(http.StatusBadRequest, "register.html", gin.H{
 				"error": err,
@@ -87,7 +87,7 @@ func RegisterAuth(db *gorm.DB) gin.HandlerFunc {
 // LoginAuth 函數，用於處理登入請求
 func LoginAuth(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		username, password, err := ValidateForm(c, "username", "password")
+		username, password, err := ValidateForm(c)
 		if err != nil {
 			c.HTML(http.StatusBadRequest, "login.html", gin.H{
 				"error": err,
