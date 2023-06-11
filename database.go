@@ -28,7 +28,8 @@ func ConnectDB() (*gorm.DB, error) {
 	}
 
 	// 產生 DSN 字串
-	dsn := fmt.Sprintf("%s:%s@%s(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", config.Username, config.Password, config.Network, config.Server, config.Port, config.Database)
+	dsn := fmt.Sprintf("%s:%s@%s(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		config.Username, config.Password, config.Network, config.Server, config.Port, config.Database)
 
 	// 透過 gorm.Open 函式連線資料庫
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
@@ -58,5 +59,4 @@ func ConnectDB() (*gorm.DB, error) {
 
 	// 回傳連線成功的 gorm.DB 實體
 	return db, nil
-
 }

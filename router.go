@@ -31,5 +31,4 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 
 	// 回傳路由器
 	return server
-
 }
